@@ -20,7 +20,7 @@ const Cart = (props) => {
   };
 
   const cartItemAddHandler = (item) => {
-    cartCtx.addItem({ ...item, amount: 1 });
+    cartCtx.addItem(item);
   };
 
   const orderHandler = () => {
@@ -29,8 +29,8 @@ const Cart = (props) => {
 
   const submitOrderHandler = async (userData) => {
     setIsSubmitting(true);
-    const response = await fetch(
-      "https://coffee-b5186-default-rtdb.firebaseio.com/meals.json",
+    await fetch(
+      "https://coffee-b5186-default-rtdb.firebaseio.com/orders.json",
       {
         method: "POST",
         body: JSON.stringify({
@@ -41,6 +41,7 @@ const Cart = (props) => {
     );
     setIsSubmitting(false);
     setDidSubmit(true);
+    cartCtx.clearCart();
   };
 
   const cartItems = (
@@ -60,9 +61,6 @@ const Cart = (props) => {
 
   const modalActions = (
     <div className={classes.actions}>
-      {hasItems ? null : (
-        <h3 className={classes.announcement}>Order list does not exist</h3>
-      )}
       <button className={classes["button--alt"]} onClick={props.onClose}>
         Close
       </button>
@@ -76,7 +74,6 @@ const Cart = (props) => {
 
   const cartModalContent = (
     <React.Fragment>
-      {" "}
       {cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
@@ -90,16 +87,18 @@ const Cart = (props) => {
   );
 
   const isSubmittingModalContent = <p>Sending order data...</p>;
+
   const didSubmitModalContent = (
     <React.Fragment>
       <p>Successfully sent the order!</p>
       <div className={classes.actions}>
-        <button classNmae={classes.button} onClick={props.onClose}>
+        <button className={classes.button} onClick={props.onClose}>
           Close
         </button>
       </div>
     </React.Fragment>
   );
+
   return (
     <Modal onClose={props.onClose}>
       {!isSubmitting && !didSubmit && cartModalContent}
